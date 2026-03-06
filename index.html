@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="毛利计算器">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="description" content="电商毛利计算器 - 快速计算商品毛利率和成本结构">
+    <title>毛利计算器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <h1>💰 毛利计算器</h1>
+            <p class="subtitle">快速算清每一笔利润</p>
+        </header>
+
+        <!-- 售价输入 -->
+        <section class="glass-card">
+            <div class="card-title"><span class="icon">🏷️</span> 商品售价</div>
+            <div class="input-group">
+                <div class="input-wrapper">
+                    <span class="input-prefix">¥</span>
+                    <input type="number" id="price" class="input-field" placeholder="输入商品售价" inputmode="decimal"
+                        step="0.01">
+                </div>
+            </div>
+        </section>
+
+        <!-- 成本输入 -->
+        <section class="glass-card">
+            <div class="card-title"><span class="icon">📦</span> 成本明细</div>
+
+            <!-- 商品成本 -->
+            <div class="input-group">
+                <label class="input-label">商品成本</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="goodsCost">¥</span>
+                    <input type="number" id="goodsCost" class="input-field" placeholder="采购/生产成本" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button class="active" data-mode="abs" data-target="goodsCost">¥</button>
+                        <button data-mode="pct" data-target="goodsCost">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快递成本 -->
+            <div class="input-group">
+                <label class="input-label">快递成本</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="shippingCost">¥</span>
+                    <input type="number" id="shippingCost" class="input-field" placeholder="物流运费" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button class="active" data-mode="abs" data-target="shippingCost">¥</button>
+                        <button data-mode="pct" data-target="shippingCost">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 平台扣点 -->
+            <div class="input-group">
+                <label class="input-label">平台扣点</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="platformFee">%</span>
+                    <input type="number" id="platformFee" class="input-field" placeholder="平台佣金比例" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button data-mode="abs" data-target="platformFee">¥</button>
+                        <button class="active" data-mode="pct" data-target="platformFee">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 广告占比 -->
+            <div class="input-group">
+                <label class="input-label">广告占比</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="adCost">%</span>
+                    <input type="number" id="adCost" class="input-field" placeholder="推广费用" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button data-mode="abs" data-target="adCost">¥</button>
+                        <button class="active" data-mode="pct" data-target="adCost">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 退货率 -->
+            <div class="input-group">
+                <label class="input-label">退货率</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">%</span>
+                    <input type="number" id="returnRate" class="input-field" placeholder="退货百分比" inputmode="decimal"
+                        step="0.1" min="0" max="100">
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算按钮 -->
+        <button class="calc-button" id="calcBtn">💰 计算毛利</button>
+
+        <!-- 计算结果 -->
+        <section class="glass-card result-card" id="resultSection">
+            <div class="card-title"><span class="icon">📊</span> 计算结果</div>
+
+            <!-- 毛利和毛利率 -->
+            <div style="display: flex; justify-content: space-around; margin-bottom: 12px;">
+                <div class="result-highlight">
+                    <div class="result-value number-animate" id="profitValue">¥0.00</div>
+                    <div class="result-label">毛利</div>
+                </div>
+                <div class="result-highlight">
+                    <div class="result-value number-animate" id="profitRateValue">0.0%</div>
+                    <div class="result-label">毛利率</div>
+                </div>
+            </div>
+
+            <!-- 成本汇总 -->
+            <div class="result-row">
+                <span class="label">商品成本</span>
+                <span class="value" id="resultGoods">¥0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="label">快递成本</span>
+                <span class="value" id="resultShipping">¥0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="label">平台扣点</span>
+                <span class="value" id="resultPlatform">¥0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="label">广告费用</span>
+                <span class="value" id="resultAd">¥0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="label">退货损失</span>
+                <span class="value" id="resultReturn">¥0.00</span>
+            </div>
+            <div class="result-row"
+                style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 4px;">
+                <span class="label" style="font-weight: 600; color: var(--text-primary);">成本合计</span>
+                <span class="value" id="resultTotal" style="color: var(--accent-orange);">¥0.00</span>
+            </div>
+        </section>
+
+        <!-- 计算过程 -->
+        <section class="glass-card" id="processSection">
+            <div class="card-title"><span class="icon">🔍</span> 计算过程</div>
+            <div class="calc-process" id="calcProcess">
+                <p style="color: var(--text-tertiary); text-align: center; font-family: -apple-system, sans-serif;">
+                    填写数据后点击「计算毛利」</p>
+            </div>
+        </section>
+
+        <!-- 饼图 -->
+        <section class="glass-card" id="chartSection">
+            <div class="card-title"><span class="icon">🍩</span> 成本结构</div>
+            <div class="chart-container">
+                <canvas id="pieChart" width="280" height="280"></canvas>
+            </div>
+            <div class="chart-legend" id="chartLegend"></div>
+        </section>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar">
+        <a href="index.html" class="active" id="tabCalc">
+            <span class="tab-icon">💰</span>
+            毛利计算
+        </a>
+        <a href="roi.html" id="tabRoi">
+            <span class="tab-icon">📈</span>
+            ROI 平衡
+        </a>
+    </nav>
+
+    <script src="js/calculator.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => { });
+        }
+    </script>
+</body>
+
+</html>

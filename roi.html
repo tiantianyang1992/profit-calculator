@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="毛利计算器">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="description" content="ROI盈亏平衡计算器 - 计算广告投放的盈亏平衡点">
+    <title>ROI 盈亏平衡计算器</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <h1>📈 ROI 盈亏平衡</h1>
+            <p class="subtitle">算清广告投放的最低 ROI</p>
+        </header>
+
+        <!-- 商品信息（从Page1自动带入） -->
+        <section class="glass-card">
+            <div class="card-title"><span class="icon">🏷️</span> 商品信息 <span
+                    style="font-size:0.7rem; color: var(--accent-blue); font-weight:400; text-transform:none; letter-spacing:0;">(自动同步自毛利计算器)</span>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">商品售价</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">¥</span>
+                    <input type="number" id="roiPrice" class="input-field" placeholder="商品售价" inputmode="decimal"
+                        step="0.01">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">商品成本</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="roiGoodsCost">¥</span>
+                    <input type="number" id="roiGoodsCost" class="input-field" placeholder="采购/生产成本" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button class="active" data-mode="abs" data-target="roiGoodsCost">¥</button>
+                        <button data-mode="pct" data-target="roiGoodsCost">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">快递成本</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="roiShippingCost">¥</span>
+                    <input type="number" id="roiShippingCost" class="input-field" placeholder="物流运费" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button class="active" data-mode="abs" data-target="roiShippingCost">¥</button>
+                        <button data-mode="pct" data-target="roiShippingCost">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">平台扣点</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix dynamic-prefix" data-for="roiPlatformFee">%</span>
+                    <input type="number" id="roiPlatformFee" class="input-field" placeholder="平台佣金" inputmode="decimal"
+                        step="0.01">
+                    <div class="mode-toggle">
+                        <button data-mode="abs" data-target="roiPlatformFee">¥</button>
+                        <button class="active" data-mode="pct" data-target="roiPlatformFee">%</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">退货率</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">%</span>
+                    <input type="number" id="roiReturnRate" class="input-field" placeholder="退货百分比" inputmode="decimal"
+                        step="0.1" min="0" max="100">
+                </div>
+            </div>
+        </section>
+
+        <!-- 固定运营成本 -->
+        <section class="glass-card">
+            <div class="card-title"><span class="icon">🏢</span> 月固定成本</div>
+
+            <div class="input-group">
+                <label class="input-label">人员工资（月）</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">¥</span>
+                    <input type="number" id="salary" class="input-field" placeholder="月薪总额" inputmode="decimal"
+                        step="100">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">房租（月）</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">¥</span>
+                    <input type="number" id="rent" class="input-field" placeholder="月租金" inputmode="decimal" step="100">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">其他固定支出（月）</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">¥</span>
+                    <input type="number" id="otherFixed" class="input-field" placeholder="水电/工具/仓储等" inputmode="decimal"
+                        step="100">
+                </div>
+            </div>
+        </section>
+
+        <!-- 销售信息 -->
+        <section class="glass-card">
+            <div class="card-title"><span class="icon">📊</span> 销量预估</div>
+            <div class="input-group">
+                <label class="input-label">月预估销量（件）</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">📦</span>
+                    <input type="number" id="monthlySales" class="input-field" placeholder="月销量" inputmode="numeric"
+                        step="1" min="1">
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算按钮 -->
+        <button class="calc-button" id="roiCalcBtn">📈 计算 ROI</button>
+
+        <!-- ROI 结果 -->
+        <section class="glass-card result-card" id="roiResultSection">
+            <div class="card-title"><span class="icon">⚖️</span> ROI 盈亏平衡点</div>
+
+            <div class="result-highlight">
+                <div class="text-center">
+                    <span class="roi-badge good" id="roiBadge">ROI ≥ --</span>
+                </div>
+                <p class="roi-interpretation" id="roiInterpretation">输入数据后自动计算盈亏平衡 ROI</p>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <div class="result-row">
+                    <span class="label">单件非广告成本</span>
+                    <span class="value" id="resultNonAdCost">¥0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="label">单件分摊固定成本</span>
+                    <span class="value" id="resultFixedPerUnit">¥0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="label">单件总成本（不含广告）</span>
+                    <span class="value" id="resultTotalNonAd">¥0.00</span>
+                </div>
+                <div class="result-row"
+                    style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 4px;">
+                    <span class="label" style="font-weight:600; color: var(--text-primary);">单件可用广告预算</span>
+                    <span class="value" id="resultAdBudget" style="color: var(--accent-blue);">¥0.00</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算过程 -->
+        <section class="glass-card" id="roiProcessSection">
+            <div class="card-title"><span class="icon">🔍</span> 计算过程</div>
+            <div class="calc-process" id="roiCalcProcess">
+                <p style="color: var(--text-tertiary); text-align: center; font-family: -apple-system, sans-serif;">
+                    填写数据后点击「计算 ROI」</p>
+            </div>
+        </section>
+
+        <!-- 敏感度图表 -->
+        <section class="glass-card" id="sensitivitySection">
+            <div class="card-title"><span class="icon">📉</span> ROI 敏感度分析</div>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">不同 ROI 下的单件利润变化</p>
+            <div class="sensitivity-chart">
+                <canvas id="sensitivityChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <!-- Tab Bar -->
+    <nav class="tab-bar">
+        <a href="index.html" id="tabCalc">
+            <span class="tab-icon">💰</span>
+            毛利计算
+        </a>
+        <a href="roi.html" class="active" id="tabRoi">
+            <span class="tab-icon">📈</span>
+            ROI 平衡
+        </a>
+    </nav>
+
+    <script src="js/roi.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => { });
+        }
+    </script>
+</body>
+
+</html>
